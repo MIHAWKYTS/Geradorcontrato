@@ -125,9 +125,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Nenhum arquivo enviado." }, { status: 400 });
     }
 
+    if (file.name.toLowerCase().endsWith(".json")) {
+      const text = await file.text();
+      try {
+        const jsonData = JSON.parse(text);
+        // Se for um arquivo JSON exportado pelo sistema, ele terá a estrutura de blocos
+        return NextResponse.json({
+          type: "json",
+          name: file.name.replace(/\.json$/i, ""),
+          blocks: jsonData.blocks || jsonData, // Suporta tanto o objeto completo quanto apenas o array de blocos
+          visualIdentity: jsonData.visualIdentity || null
+        });
+      } catch (e) {
+        return NextResponse.json({ error: "Arquivo JSON inválido." }, { status: 400 });
+      }
+    }
+
     if (!file.name.toLowerCase().endsWith(".pdf") || (file.type !== "application/pdf" && file.type !== "")) {
       logger.info({ fileName: file.name, fileType: file.type }, "Invalid file type attempt");
-      return NextResponse.json({ error: "Apenas arquivos PDF são permitidos." }, { status: 400 });
+      return NextResponse.json({ error: "Apenas arquivos PDF ou JSON são permitidos." }, { status: 400 });
     }
 
     if (file.size > MAX_FILE_SIZE) {

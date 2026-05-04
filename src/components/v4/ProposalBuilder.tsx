@@ -8,8 +8,11 @@ import { V4DynamicPDF } from './V4DynamicPDF';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { V4ProposalBlock } from '@/types/v4-blocks';
 
+import { useTemplateStore } from '@/store/templateStore';
+
 export default function ProposalBuilder() {
-  const { isEditing, startProposal, blocks, addBlock, updateBlock, removeBlock, reorderBlocks, getTotal } = useV4Store();
+  const { isEditing, startProposal, blocks, addBlock, updateBlock, removeBlock, reorderBlocks, getTotal, visualIdentity } = useV4Store();
+  const { addTemplate } = useTemplateStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -36,6 +39,41 @@ export default function ProposalBuilder() {
     }
   };
 
+  const handleSaveToGallery = () => {
+    const name = prompt("Dê um nome para este modelo:", "Meu Template Personalizado");
+    if (!name) return;
+
+    addTemplate({
+      name,
+      description: `Modelo criado em ${new Date().toLocaleDateString('pt-BR')} via Editor V4`,
+      category: "Geral",
+      visualIdentity: visualIdentity || {
+        primaryColor: "#FF0000",
+        secondaryColor: "#1A1A1A",
+        fontFamily: "Inter",
+      },
+      defaultBlocks: blocks,
+    });
+
+    alert("Modelo salvo com sucesso na Galeria!");
+  };
+
+  const handleExportJSON = () => {
+    const data = {
+      name: "Exportação ROCKET",
+      blocks,
+      visualIdentity,
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `template_rocket_${new Date().getTime()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-[calc(100vh-80px)] bg-[#f5f5f5] overflow-hidden">
       {/* Sidebar - Componentes */}
@@ -50,14 +88,29 @@ export default function ProposalBuilder() {
         <button onClick={() => addBlock({ id: crypto.randomUUID(), type: 'signatures', clientName: 'Nome do Cliente', rocketResponsible: 'ROCKET' })} className="text-left p-3 border border-gray-100 rounded hover:border-[#ff0000] hover:bg-red-50 font-medium text-sm text-gray-700 transition-colors flex items-center gap-2">✍️ Assinaturas</button>
         <button onClick={() => addBlock({ id: crypto.randomUUID(), type: 'page-break' })} className="text-left p-3 border border-gray-100 rounded hover:border-[#ff0000] hover:bg-red-50 font-medium text-sm text-gray-700 transition-colors flex items-center gap-2">✂️ Quebra de Página</button>
 
-        <div className="mt-auto pt-6 border-t border-gray-200">
+        <div className="mt-auto pt-6 border-t border-gray-200 flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <button 
+              onClick={handleSaveToGallery}
+              className="flex items-center justify-center gap-2 bg-blue-600 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              💾 Salvar na Galeria
+            </button>
+            <button 
+              onClick={handleExportJSON}
+              className="flex items-center justify-center gap-2 bg-gray-600 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              📤 Exportar JSON
+            </button>
+          </div>
+
           <PDFDownloadLink
-            document={<V4DynamicPDF blocks={blocks} total={getTotal()} visualIdentity={useV4Store.getState().visualIdentity} />}
+            document={<V4DynamicPDF blocks={blocks} total={getTotal()} visualIdentity={visualIdentity} />}
             fileName="proposta_v4.pdf"
-            className="w-full flex items-center justify-center bg-[#1a1a1a] text-white font-bold py-3 px-4 rounded-lg hover:bg-black transition-colors"
+            className="w-full flex items-center justify-center bg-[#ff0000] text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
           >
             {/* @ts-ignore */}
-            {({ loading, error }) => loading ? "Preparando Documento..." : error ? "Erro no PDF" : "📥 Exportar PDF (V4)"}
+            {({ loading, error }) => loading ? "Preparando Documento..." : error ? "Erro no PDF" : "📥 Baixar PDF Final"}
           </PDFDownloadLink>
         </div>
       </div>
