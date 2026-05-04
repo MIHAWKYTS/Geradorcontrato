@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-rocket-surface text-rocket-dark font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+
+  /* ─── Form field ─── */
+  .field-label {
+    @apply block text-xs font-semibold text-rocket-dark-3 uppercase tracking-wider mb-1.5;
+  }
+
+  .field-input {
+    @apply w-full px-3.5 py-2.5 bg-white border border-rocket-border rounded-lg text-sm text-rocket-dark placeholder-rocket-gray-light transition-all duration-200 outline-none focus:border-rocket-red focus:ring-2 focus:ring-rocket-red/10;
+  }
+
+  .field-input:hover {
+    @apply border-rocket-gray-light;
+  }
+
+  .field-textarea {
+    @apply field-input resize-none;
+    min-height: 90px;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    @apply bg-white rounded-xl border border-rocket-border shadow-card;
+  }
+
+  .card-header {
+    @apply flex items-center gap-3 px-6 py-4 border-b border-rocket-border;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  /* ─── Section nav pill ─── */
+  .nav-pill {
+    @apply flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-medium text-rocket-gray cursor-pointer transition-all duration-200 hover:bg-rocket-surface hover:text-rocket-dark;
+  }
+
+  .nav-pill.active {
+    @apply bg-rocket-red/8 text-rocket-red font-semibold;
+  }
+
+  /* ─── Buttons ─── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-rocket-red text-white text-sm font-semibold shadow-red transition-all duration-200 hover:bg-rocket-red-dark hover:shadow-none active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-rocket-border text-rocket-dark text-sm font-medium transition-all duration-200 hover:border-rocket-gray-light hover:bg-rocket-surface active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-rocket-gray text-sm font-medium transition-all duration-200 hover:bg-rocket-surface hover:text-rocket-dark active:scale-95;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-red-500 text-xs font-medium border border-red-200 bg-red-50 transition-all duration-200 hover:bg-red-100 hover:border-red-300 active:scale-95;
+  }
+
+  /* ─── Array item card ─── */
+  .array-item {
+    @apply bg-rocket-surface rounded-xl border border-rocket-border p-4 animate-fade-in;
+  }
+
+  /* ─── Badge ─── */
+  .badge-red {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rocket-red/10 text-rocket-red;
+  }
+
+  /* ─── Section icon circle ─── */
+  .section-icon {
+    @apply w-8 h-8 rounded-lg bg-rocket-red/10 flex items-center justify-center text-rocket-red flex-shrink-0;
+  }
+
+  /* ─── Preview ─── */
+  .preview-section {
+    @apply mb-4 last:mb-0;
+  }
+
+  .preview-label {
+    @apply text-[10px] font-bold uppercase tracking-widest text-rocket-gray mb-1;
+  }
+
+  .preview-value {
+    @apply text-sm text-rocket-dark leading-relaxed;
+  }
+}
+
+@layer utilities {
+  .bg-rocket-red\/8 {
+    background-color: rgb(255 0 0 / 0.08);
+  }
+
+  /* Scrollbar customization */
+  .custom-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    @apply bg-rocket-border rounded-full;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-rocket-gray-light;
+  }
+}
