@@ -141,9 +141,21 @@ export async function POST(req: NextRequest) {
     try {
       rawText = await parsePdfWithTimeout(buffer);
     } catch (pdfErr: any) {
-      logger.error({ error: pdfErr.message, fileName: file.name }, "PDF parse error");
+      // Diagnóstico: Verificar se o arquivo começa com HTML (indicando erro de proxy ou arquivo falso)
+      const fileSignature = buffer.slice(0, 50).toString("utf8");
+      logger.error({ 
+        error: pdfErr.message, 
+        fileName: file.name,
+        fileSignature: fileSignature.substring(0, 100),
+        isHtml: fileSignature.toLowerCase().includes("<!doctype html") || fileSignature.toLowerCase().includes("<html")
+      }, "PDF parse error");
+
       const status = pdfErr.message.includes("Timeout") ? 504 : 422;
-      return NextResponse.json({ error: pdfErr.message || "Erro ao processar PDF." }, { status });
+      return NextResponse.json({ 
+        error: fileSignature.toLowerCase().includes("<html") 
+          ? "O servidor recebeu um arquivo HTML em vez de PDF. Isso geralmente indica um erro de rede ou limite de tamanho no servidor."
+          : (pdfErr.message || "Erro ao processar PDF.")
+      }, { status });
     }
 
     if (!rawText.trim()) {
